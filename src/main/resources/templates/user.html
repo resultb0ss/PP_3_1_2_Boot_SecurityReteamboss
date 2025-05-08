@@ -15,8 +15,8 @@
         <div class="col">
             <span th:text="${user.username}">Username</span>
             <span> with roles: </span>
-            <span th:each="role : ${user.roles}" th:text="${role.name} + ' '" />
-S
+            <span th:each="role : ${user.roles}" th:text="${role.name} + ' '"/>
+            S
         </div>
         <div class="col text-end">
             <form th:action="@{/logout}" method="post">

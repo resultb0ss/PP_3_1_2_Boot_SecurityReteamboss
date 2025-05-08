@@ -1,6 +1,5 @@
 package ru.kata.spring.boot_security.demo.dao;
 
-
 import org.springframework.stereotype.Repository;
 import ru.kata.spring.boot_security.demo.entity.User;
 
@@ -23,7 +22,7 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public void saveNewUser(User user) {
-        if (user.getId() == 0) {
+        if (user.getId() == null) {
             entityManager.persist(user);
         } else {
             entityManager.merge(user);

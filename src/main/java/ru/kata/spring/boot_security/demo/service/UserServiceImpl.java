@@ -1,19 +1,28 @@
 package ru.kata.spring.boot_security.demo.service;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.kata.spring.boot_security.demo.dao.RoleRepository;
 import ru.kata.spring.boot_security.demo.dao.UserDAO;
+import ru.kata.spring.boot_security.demo.entity.Role;
 import ru.kata.spring.boot_security.demo.entity.User;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class UserServiceImpl implements UserService {
 
+    private final UserDAO userDAO;
+    private final RoleRepository roleRepository;
+
     @Autowired
-    private UserDAO userDAO;
+    public UserServiceImpl(UserDAO userDAO, RoleRepository roleRepository) {
+        this.userDAO = userDAO;
+        this.roleRepository = roleRepository;
+    }
 
     @Override
     @Transactional
@@ -24,6 +33,18 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void saveNewUser(User user) {
+        user.setEnabled(true);
+        Set<Role> resolvedRoles = new HashSet<>();
+
+        for (Role role : user.getRoles()) {
+            roleRepository.findById(role.getId()).ifPresent(resolvedRoles::add);
+        }
+
+        if (resolvedRoles.isEmpty()) {
+            roleRepository.findById(2L).ifPresent(resolvedRoles::add);
+        }
+
+        user.setRoles(resolvedRoles);
         userDAO.saveNewUser(user);
     }
 

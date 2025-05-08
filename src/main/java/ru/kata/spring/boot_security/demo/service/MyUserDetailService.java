@@ -20,15 +20,10 @@ public class MyUserDetailService implements UserDetailsService {
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        System.out.println("Попытка логина: " + username);
         User user = userDAO.findByUsername(username);
-
         if (user == null) {
             throw new UsernameNotFoundException("Пользователь не найден: " + username);
         }
-
-        System.out.println("Найден пользователь: " + user.getUsername());
-        System.out.println("Пароль (в открытом виде): " + user.getPassword());
 
         return user;
     }

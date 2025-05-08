@@ -40,7 +40,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .permitAll();
     }
 
-
     @Override
     protected void configure(AuthenticationManagerBuilder auth) {
         auth.authenticationProvider(daoAuthenticationProvider());

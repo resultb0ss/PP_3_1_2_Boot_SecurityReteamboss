@@ -1,9 +1,7 @@
 package ru.kata.spring.boot_security.demo.entity;
 
-
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
 import javax.persistence.*;
 import java.util.Collection;
 import java.util.Objects;
@@ -15,6 +13,7 @@ public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
     private String name;
@@ -25,6 +24,7 @@ public class User implements UserDetails {
     @Column(unique = true, length = 50)
     private String username;
     private String password;
+    @Column(name = "enabled")
     private boolean enabled;
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -79,10 +79,6 @@ public class User implements UserDetails {
         return surname;
     }
 
-    public String getDepartment() {
-        return department;
-    }
-
     public int getSalary() {
         return salary;
     }
@@ -93,30 +89,6 @@ public class User implements UserDetails {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setSurname(String surname) {
-        this.surname = surname;
-    }
-
-    public void setDepartment(String department) {
-        this.department = department;
-    }
-
-    public void setSalary(int salary) {
-        this.salary = salary;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public void setEnabled(boolean enabled) {
@@ -166,7 +138,6 @@ public class User implements UserDetails {
                ", department='" + department + '\'' +
                ", enabled=" + enabled +
                ", salary=" + salary +
-               // ⚠️ НЕ ВЫВОДИ roles.toString() напрямую — Hibernate может зациклиться
                ", roles=" + roles.stream().map(Role::getName).toList() +
                '}';
     }
