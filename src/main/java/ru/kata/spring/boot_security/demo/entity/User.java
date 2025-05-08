@@ -162,12 +162,13 @@ public class User implements UserDetails {
                "id=" + id +
                ", name='" + name + '\'' +
                ", surname='" + surname + '\'' +
-               ", department='" + department + '\'' +
-               ", salary=" + salary +
                ", username='" + username + '\'' +
-               ", password='" + password + '\'' +
+               ", department='" + department + '\'' +
                ", enabled=" + enabled +
-               ", roles=" + roles +
+               ", salary=" + salary +
+               // ⚠️ НЕ ВЫВОДИ roles.toString() напрямую — Hibernate может зациклиться
+               ", roles=" + roles.stream().map(Role::getName).toList() +
                '}';
     }
+
 }

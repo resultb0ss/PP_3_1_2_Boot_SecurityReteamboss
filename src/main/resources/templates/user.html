@@ -10,9 +10,10 @@
     <!-- Header -->
     <div class="row bg-dark text-white p-3">
         <div class="col">
-            <span th:text="${#authentication.name}"></span>
+            <span th:text="${user.username}">Username</span>
             <span> with roles: </span>
-            <span th:text="${#authentication.authorities}"></span>
+            <span th:each="role : ${user.roles}" th:text="${role.name} + ' '" />
+S
         </div>
         <div class="col text-end">
             <form th:action="@{/logout}" method="post">
@@ -27,7 +28,7 @@
         <div class="col-2 bg-light vh-100 p-3">
             <ul class="nav flex-column nav-pills">
                 <li class="nav-item">
-                    <a class="nav-link active">User</a>
+                    <a class="nav-link active" href="#">User</a>
                 </li>
             </ul>
         </div>
@@ -45,19 +46,21 @@
                             <th>ID</th>
                             <th>First Name</th>
                             <th>Last Name</th>
-                            <th>Age</th>
-                            <th>Email</th>
+                            <th>Salary</th>
+                            <th>Username</th>
                             <th>Role</th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr th:object="${user}">
-                            <td th:text="*{id}"></td>
-                            <td th:text="*{name}"></td>
-                            <td th:text="*{surname}"></td>
-                            <td th:text="*{salary}"></td>
-                            <td th:text="*{username}"></td>
-                            <td th:text="*{roles}"></td>
+                            <td th:text="*{id}">1</td>
+                            <td th:text="*{name}">Name</td>
+                            <td th:text="*{surname}">Surname</td>
+                            <td th:text="*{salary}">100000</td>
+                            <td th:text="*{username}">admin</td>
+                            <td>
+                                <span th:each="role : *{roles}" th:text="${role.name}" class="me-1"></span>
+                            </td>
                         </tr>
                         </tbody>
                     </table>
