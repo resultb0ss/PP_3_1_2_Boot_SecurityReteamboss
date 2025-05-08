@@ -9,6 +9,28 @@
 
     <meta name="_csrf" th:content="${_csrf.token}">
     <meta name="_csrf_header" th:content="${_csrf.headerName}">
+
+    <style>
+        .table td, .table th {
+            max-width: 180px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: 14px;
+        }
+
+        .table th {
+            font-weight: bold;
+        }
+
+        .table td input[type="checkbox"] {
+            transform: scale(1.1);
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+    </style>
 </head>
 <body>
 <div class="container-fluid">
@@ -56,24 +78,25 @@
 
             <div class="tab-content mt-3">
                 <!-- Users Table -->
-                <div id="users" class="tab-pane fade show active">
-                    <table class="table table-bordered table-striped">
-                        <thead class="table-dark">
-                        <tr>
-                            <th>ID</th>
-                            <th>First Name</th>
-                            <th>Last Name</th>
-                            <th>Age</th>
-                            <th>Email</th>
-                            <th>Role</th>
-                            <th>Enabled</th>
-                            <th>Edit</th>
-                            <th>Delete</th>
-
-                        </tr>
-                        </thead>
-                        <tbody id="usersTableBody"></tbody>
-                    </table>
+                <div id="users" class="tab-pane fade show active table-container">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped">
+                            <thead class="table-dark">
+                            <tr>
+                                <th>ID</th>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <th>Age</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Enabled</th>
+                                <th>Edit</th>
+                                <th>Delete</th>
+                            </tr>
+                            </thead>
+                            <tbody id="usersTableBody"></tbody>
+                        </table>
+                    </div>
                 </div>
 
                 <!-- Add New User Form -->
@@ -100,6 +123,14 @@
                             <input type="password" class="form-control" id="password" required>
                         </div>
                         <div class="col-md-6">
+                            <label for="department" class="form-label">Department</label>
+                            <select id="department" class="form-select" required>
+                                <option value="IT">IT</option>
+                                <option value="HR">HR</option>
+                                <option value="Sales">Sales</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
                             <label for="roles" class="form-label">Role</label>
                             <select multiple class="form-select" id="roles">
                                 <option th:each="role : ${allRoles}"
@@ -108,14 +139,6 @@
                                 </option>
                             </select>
 
-                        </div>
-                        <div class="col-md-6">
-                            <label for="department" class="form-label">Department</label>
-                            <select id="department" class="form-select" required>
-                                <option value="IT">IT</option>
-                                <option value="HR">HR</option>
-                                <option value="Sales">Sales</option>
-                            </select>
                         </div>
 
                         <div class="col-12">

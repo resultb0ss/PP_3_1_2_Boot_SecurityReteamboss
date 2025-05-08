@@ -44,7 +44,22 @@ public class UserServiceImpl implements UserService {
             roleRepository.findById(2L).ifPresent(resolvedRoles::add);
         }
 
+        if (user.getDepartment() == null) {
+            user.setDepartment("IT");
+        }
         user.setRoles(resolvedRoles);
+
+        if (user.getId() == null || user.getId() == 0) {
+            user.setEnabled(true);
+            userDAO.saveNewUser(user);
+            return;
+        }
+
+        User existing = userDAO.getUserById(user.getId());
+        if (user.getPassword() == null || user.getPassword().isEmpty()) {
+            user.setPassword(existing.getPassword());
+        }
+        user.setEnabled(existing.isEnabled());
         userDAO.saveNewUser(user);
     }
 
