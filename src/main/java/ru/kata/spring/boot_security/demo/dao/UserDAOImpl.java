@@ -48,6 +48,9 @@ public class UserDAOImpl implements UserDAO {
         TypedQuery<User> query = entityManager.createQuery(
                 "SELECT u FROM User u LEFT JOIN FETCH u.roles WHERE u.username = :username", User.class);
         query.setParameter("username", username);
-        return query.getSingleResult();
+
+        List<User> result = query.getResultList();
+        return result.isEmpty() ? null : result.get(0);
     }
+
 }

@@ -1,26 +1,47 @@
 package ru.kata.spring.boot_security.demo.controller;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.CustomCollectionEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.*;
 import ru.kata.spring.boot_security.demo.entity.User;
 import ru.kata.spring.boot_security.demo.service.RoleService;
 import ru.kata.spring.boot_security.demo.service.UserService;
 
 import java.security.Principal;
+import java.util.Set;
 
 @Controller
 public class UserController {
 
+    private final UserService userService;
+    private final RoleService roleService;
+
     @Autowired
-    private UserService userService;
-    @Autowired
-    private RoleService roleService;
+    public UserController(UserService userService, RoleService roleService) {
+        this.userService = userService;
+        this.roleService = roleService;
+    }
+
+    @InitBinder
+    protected void initBinder(WebDataBinder binder) {
+        binder.registerCustomEditor(Set.class, "roles", new CustomCollectionEditor(Set.class) {
+            @Override
+            protected Object convertElement(Object element) {
+                if (element instanceof String) {
+                    try {
+                        Long roleId = Long.parseLong((String) element);
+                        return roleService.getRoleById(roleId);
+                    } catch (NumberFormatException e) {
+                        return null;
+                    }
+                }
+                return null;
+            }
+        });
+    }
 
     @GetMapping("/")
     public String redirectToLogin() {
@@ -39,19 +60,6 @@ public class UserController {
         return "user";
     }
 
-
-    @PostMapping("/saveNewUser")
-    public String saveUser(@ModelAttribute("user") User user) {
-        userService.saveNewUser(user);
-        return "redirect:/admin";
-    }
-
-    @GetMapping("/deleteUser")
-    public String deleteUser(@RequestParam("usrId") Long id) {
-        userService.deleteUserById(id);
-        return "redirect:/";
-    }
-
     @GetMapping("/admin")
     public String showAllUsers(Model model) {
         model.addAttribute("allUsers", userService.getAllUsers());
@@ -60,5 +68,15 @@ public class UserController {
         return "admin";
     }
 
-}
+    @PostMapping("/saveOrUpdateUser")
+    public String saveOrUpdateUser(@ModelAttribute("user") User user) {
+        userService.saveNewUser(user);
+        return "redirect:/admin";
+    }
 
+    @GetMapping("/deleteUser")
+    public String deleteUser(@RequestParam("usrId") Long id) {
+        userService.deleteUserById(id);
+        return "redirect:/admin";
+    }
+}
