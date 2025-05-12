@@ -2,6 +2,7 @@ package ru.kata.spring.boot_security.demo.entity;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
 import javax.persistence.*;
 import java.util.Collection;
 import java.util.Objects;
@@ -27,7 +28,7 @@ public class User implements UserDetails {
     @Column(name = "enabled")
     private boolean enabled;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles;
@@ -111,6 +112,22 @@ public class User implements UserDetails {
         this.roles = roles;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setSurname(String surname) {
+        this.surname = surname;
+    }
+
+    public void setSalary(int salary) {
+        this.salary = salary;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -139,6 +156,17 @@ public class User implements UserDetails {
         this.enabled = enabled;
         this.roles = roles;
     }
+
+    public User(String name, String surname, String username, String password, int salary, String department) {
+        this.name = name;
+        this.surname = surname;
+        this.username = username;
+        this.password = password;
+        this.salary = salary;
+        this.department = department;
+        this.enabled = true;
+    }
+
 
     @Override
     public String toString() {

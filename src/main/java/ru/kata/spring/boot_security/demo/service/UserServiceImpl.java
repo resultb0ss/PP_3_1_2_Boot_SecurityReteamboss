@@ -1,9 +1,12 @@
 package ru.kata.spring.boot_security.demo.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.kata.spring.boot_security.demo.dao.RoleRepository;
+import ru.kata.spring.boot_security.demo.dao.RoleDAO;
 import ru.kata.spring.boot_security.demo.dao.UserDAO;
 import ru.kata.spring.boot_security.demo.entity.Role;
 import ru.kata.spring.boot_security.demo.entity.User;
@@ -13,15 +16,17 @@ import java.util.List;
 import java.util.Set;
 
 @Service
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl implements UserService, UserDetailsService {
 
     private final UserDAO userDAO;
-    private final RoleRepository roleRepository;
+    private final RoleDAO roleDAO;
+
+    private final Long DEFAULT_USER_ROLE = 2L;
 
     @Autowired
-    public UserServiceImpl(UserDAO userDAO, RoleRepository roleRepository) {
+    public UserServiceImpl(UserDAO userDAO, RoleDAO roleDAO) {
         this.userDAO = userDAO;
-        this.roleRepository = roleRepository;
+        this.roleDAO = roleDAO;
     }
 
     @Override
@@ -33,33 +38,39 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void saveNewUser(User user) {
-        user.setEnabled(true);
-        Set<Role> resolvedRoles = new HashSet<>();
 
-        for (Role role : user.getRoles()) {
-            roleRepository.findById(role.getId()).ifPresent(resolvedRoles::add);
+        user.setEnabled(true);
+
+        Set<Role> resolvedRoles = new HashSet<>();
+        if (user.getRoles() != null) {
+            for (Role role : user.getRoles()) {
+                Role persisted = roleDAO.getRoleById(role.getId());
+                if (persisted != null) {
+                    resolvedRoles.add(persisted);
+                }
+            }
         }
 
         if (resolvedRoles.isEmpty()) {
-            roleRepository.findById(2L).ifPresent(resolvedRoles::add);
+            Role defaultRole = roleDAO.getRoleById(DEFAULT_USER_ROLE);
+            if (defaultRole != null) {
+                resolvedRoles.add(defaultRole);
+            }
         }
+        user.setRoles(resolvedRoles);
 
         if (user.getDepartment() == null) {
             user.setDepartment("IT");
         }
-        user.setRoles(resolvedRoles);
 
-        if (user.getId() == null || user.getId() == 0) {
-            user.setEnabled(true);
-            userDAO.saveNewUser(user);
-            return;
+        if (user.getId() != null && user.getId() != 0) {
+            User existing = userDAO.getUserById(user.getId());
+            if (user.getPassword() == null || user.getPassword().isEmpty()) {
+                user.setPassword(existing.getPassword());
+            }
+            user.setEnabled(existing.isEnabled());
         }
 
-        User existing = userDAO.getUserById(user.getId());
-        if (user.getPassword() == null || user.getPassword().isEmpty()) {
-            user.setPassword(existing.getPassword());
-        }
-        user.setEnabled(existing.isEnabled());
         userDAO.saveNewUser(user);
     }
 
@@ -76,7 +87,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public User findByUsername(String username) {
         return userDAO.findByUsername(username);
+    }
+
+    @Override
+    @Transactional
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userDAO.findByUsername(username);
+        if (user == null) {
+            throw new UsernameNotFoundException("Пользователь не найден: " + username);
+        }
+        return user;
     }
 }
