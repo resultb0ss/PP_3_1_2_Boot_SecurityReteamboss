@@ -99,7 +99,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         if (user == null) {
             throw new UsernameNotFoundException("Пользователь не найден: " + username);
         }
-
         return user;
     }
 }
