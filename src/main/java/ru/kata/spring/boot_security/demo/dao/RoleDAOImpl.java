@@ -13,7 +13,7 @@ import java.util.List;
 public class RoleDAOImpl implements RoleDAO {
 
     @PersistenceContext
-    EntityManager entityManager;
+    private EntityManager entityManager;
 
 
     @Override
@@ -23,7 +23,6 @@ public class RoleDAOImpl implements RoleDAO {
     }
 
     @Override
-    @Transactional
     public void addNewRole(Role role) {
         if (role.getId() == null) {
             entityManager.persist(role);

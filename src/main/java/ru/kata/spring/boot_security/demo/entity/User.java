@@ -14,7 +14,6 @@ public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     private Long id;
 
     private String name;
@@ -32,6 +31,31 @@ public class User implements UserDetails {
     @JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles;
+
+    public User() {
+    }
+
+    public User(Long id, String name, String surname, String department, int salary, String username, String password, boolean enabled, Set<Role> roles) {
+        this.id = id;
+        this.name = name;
+        this.surname = surname;
+        this.department = department;
+        this.salary = salary;
+        this.username = username;
+        this.password = password;
+        this.enabled = enabled;
+        this.roles = roles;
+    }
+
+    public User(String name, String surname, String username, String password, int salary, String department) {
+        this.name = name;
+        this.surname = surname;
+        this.username = username;
+        this.password = password;
+        this.salary = salary;
+        this.department = department;
+        this.enabled = true;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -140,33 +164,6 @@ public class User implements UserDetails {
     public int hashCode() {
         return Objects.hash(id);
     }
-
-
-    public User() {
-    }
-
-    public User(Long id, String name, String surname, String department, int salary, String username, String password, boolean enabled, Set<Role> roles) {
-        this.id = id;
-        this.name = name;
-        this.surname = surname;
-        this.department = department;
-        this.salary = salary;
-        this.username = username;
-        this.password = password;
-        this.enabled = enabled;
-        this.roles = roles;
-    }
-
-    public User(String name, String surname, String username, String password, int salary, String department) {
-        this.name = name;
-        this.surname = surname;
-        this.username = username;
-        this.password = password;
-        this.salary = salary;
-        this.department = department;
-        this.enabled = true;
-    }
-
 
     @Override
     public String toString() {

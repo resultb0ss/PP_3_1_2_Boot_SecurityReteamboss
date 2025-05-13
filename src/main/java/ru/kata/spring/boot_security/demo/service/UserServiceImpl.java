@@ -21,7 +21,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private final UserDAO userDAO;
     private final RoleDAO roleDAO;
 
-    private final Long DEFAULT_USER_ROLE = 2L;
+    private static final Long DEFAULT_USER_ROLE = 2L;
 
     @Autowired
     public UserServiceImpl(UserDAO userDAO, RoleDAO roleDAO) {
